@@ -7,6 +7,9 @@ from tqdm import tqdm
 from video_works import compress_video
 from joblib import Parallel, delayed
 
+root_op_folder = "/Users/santhiya/Documents/multimedia_mac/compressed/"
+input_folder = '/Users/santhiya/Documents/multimedia_mac/S23Ultra'
+
 # configure max_width and height to alter size
 def reduce_image_size(all_files, root_ip_folder, input_folder, root_op_folder, max_width, max_height):
 
@@ -28,13 +31,17 @@ def reduce_image_size(all_files, root_ip_folder, input_folder, root_op_folder, m
             if extension.lower() in ["opus", "m4a"]:
                 continue
 
+            if os.path.isfile(output_file):
+                print(f" {output_file} - File exists.")
+                continue
+
             if extension.lower() in ["mp4", "MP4", "mpg", "MPG", "AVI", "avi", "m4v", "mov", "MOV"]:
                 # method call returns filename if passed and False if failed
                 file_name = compress_video.compress_video(input_file, output_dir,size_upper_bound= 40 * 600)
                 if file_name:
-                    print("video is processed successfully", file_name)
+                    print(f"video {file_name} is processed successfully")
                 else:
-                    print("video is copied as compression failed", input_file)
+                    print(f"video {file_name} is copied as compression failed")
                     shutil.copy(input_file, output_file)
                 continue
 
@@ -101,9 +108,6 @@ def create_new_dirs(new_dirs, root_op_folder):
             os.makedirs(path)
 
 
-# Example usage
-root_op_folder = "/Users/santhiya/Documents/multimedia_mac/compressed/"
-input_folder = '/Users/santhiya/Documents/multimedia_mac/lucky_marriage'
 root_ip_folder = input_folder.split("/")[-1]
 # output_folder = '/Users/santhiya/Documents/multimedia/compressed/nikon_compressed'
 # max_width = 960
@@ -123,7 +127,7 @@ max_height = 1188
 
 all_files, new_dirs = read_files_in_directory(input_folder)
 
-# Parallel(n_jobs=5)(delayed(reduce_image_size)(os.path.join(input_folder, folder), output_folder, folder, max_width, max_height)
-#                     for folder in folders)
+# Parallel(n_jobs=3)(delayed(reduce_image_size)(all_files, input_folder, root_ip_folder, root_op_folder, max_width, max_height)
+#                     for file in all_files)
 reduce_image_size(all_files, input_folder, root_ip_folder, root_op_folder, max_width, max_height)
 print("------------completed---------------")

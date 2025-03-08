@@ -1,7 +1,7 @@
 import os
 import ffmpeg
 
-def compress_video(video_full_path, size_upper_bound, two_pass=True, filename_suffix='cps_'):
+def compress_video(video_full_path, output_path, size_upper_bound, two_pass=True, filename_suffix='_compressed_'):
     """
     Compress video file to max-supported size.
     :param video_full_path: the video you want to compress.
@@ -11,8 +11,15 @@ def compress_video(video_full_path, size_upper_bound, two_pass=True, filename_su
     :return: out_put_name or error
     """
     filename, extension = os.path.splitext(video_full_path)
+    filename = filename.split("/")[-1]
+    filename = os.path.join(output_path, filename)
     extension = '.mp4'
     output_file_name = filename + filename_suffix + extension
+
+    # if size is less, reducing output size accordingly. for < 20 mb, output size was more before
+    size = os.path.getsize(video_full_path)/1048576
+    size_upper_bound = (size/4) * 600
+
 
     # Adjust them to meet your minimum requirements (in bps), or maybe this function will refuse your video!
     total_bitrate_lower_bound = 11000
@@ -69,17 +76,19 @@ def compress_video(video_full_path, size_upper_bound, two_pass=True, filename_su
                           **{'c:v': 'libx264', 'b:v': video_bitrate, 'c:a': 'aac', 'b:a': audio_bitrate}
                           ).overwrite_output().run()
 
+        print("video {} size {} compressed {}".format(output_file_name, os.path.getsize(video_full_path)/1048576, os.path.getsize(output_file_name)/1048576))
         if os.path.getsize(output_file_name) <= size_upper_bound * 1024:
             return output_file_name
         elif os.path.getsize(output_file_name) < os.path.getsize(video_full_path):  # Do it again
             return compress_video(output_file_name, size_upper_bound)
         else:
             return False
-    except FileNotFoundError as e:
-        print('You do not have ffmpeg installed!', e)
+    except Exception as e:
+        print('error', e)
         print('You can install ffmpeg by reading https://github.com/kkroening/ffmpeg-python/issues/251')
         return False
 
 if __name__ == '__main__':
-    file_name = compress_video('input.mp4', 50 * 1000)
+    file_name = compress_video('video_20230120_065833.mp4',
+                               "op_path/video_works", 40 * 800)
     print(file_name)
