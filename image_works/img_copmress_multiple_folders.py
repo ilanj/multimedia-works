@@ -5,10 +5,10 @@ from PIL import Image
 from time import sleep
 from tqdm import tqdm
 from video_works import compress_video
-from joblib import Parallel, delayed
+# from joblib import Parallel, delayed
 
 root_op_folder = "/Users/santhiya/Documents/multimedia_mac/compressed/"
-input_folder = '/Users/santhiya/Documents/multimedia_mac/S23Ultra'
+input_folder = '/Users/santhiya/Documents/multimedia_mac/navinila'
 
 # configure max_width and height to alter size
 def reduce_image_size(all_files, root_ip_folder, input_folder, root_op_folder, max_width, max_height):

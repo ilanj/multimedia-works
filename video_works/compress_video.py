@@ -10,6 +10,7 @@ def compress_video(video_full_path, output_path, size_upper_bound, two_pass=True
     :param filename_suffix: Add a suffix for new video.
     :return: out_put_name or error
     """
+    print(f"video - {video_full_path}")
     filename, extension = os.path.splitext(video_full_path)
     filename = filename.split("/")[-1]
     filename = os.path.join(output_path, filename)
@@ -85,7 +86,7 @@ def compress_video(video_full_path, output_path, size_upper_bound, two_pass=True
             return False
     except Exception as e:
         print('error', e)
-        print('You can install ffmpeg by reading https://github.com/kkroening/ffmpeg-python/issues/251')
+        # print('You can install ffmpeg by reading https://github.com/kkroening/ffmpeg-python/issues/251')
         return False
 
 if __name__ == '__main__':
